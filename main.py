@@ -1,11 +1,10 @@
 import telebot
+from token_bot import token
 
-bot = telebot.TeleBot('8523107390:AAFApLt1wIQ2_4kFyfSprjWdgspPzIY-gZQ')
+bot = telebot.TeleBot(token())
 
 commands = [
     telebot.types.BotCommand("start", "Запустити бота"),
-    telebot.types.BotCommand("help", "Отримати допомогу"),
-    telebot.types.BotCommand("menu", "Відкрити меню"),
 ]
 
 bot.set_my_commands(commands)
