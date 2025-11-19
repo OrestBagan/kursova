@@ -1,0 +1,40 @@
+{
+    "1055097059": [
+        {
+            "id": "espreso",
+            "name": "Еспресо",
+            "price": 35,
+            "quantity": 3
+        },
+        {
+            "id": "americano",
+            "name": "Американо",
+            "price": 40,
+            "quantity": 1
+        },
+        {
+            "id": "late",
+            "name": "Лате",
+            "price": 60,
+            "quantity": 1
+        },
+        {
+            "id": "tea_black",
+            "name": "Чай чорний",
+            "price": 35,
+            "quantity": 2
+        },
+        {
+            "id": "tea_green",
+            "name": "Чай зелений",
+            "price": 35,
+            "quantity": 2
+        },
+        {
+            "id": "kackao",
+            "name": "Какао",
+            "price": 50,
+            "quantity": 1
+        }
+    ]
+}
