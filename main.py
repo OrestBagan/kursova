@@ -1,5 +1,5 @@
 import telebot
-from token_bot import token
+from token_bot import token, admin
 import json
 import os
 
@@ -11,12 +11,46 @@ commands = [
 
 bot.set_my_commands(commands)
 
+keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+keyboard.add("Меню", "Корзина", "Контакти", "Адміністратор")
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, "привіт, я бот кав'ярні")
-    keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add("Меню", "Корзина", "Контакти", "Адміністратор")
     bot.send_message(message.chat.id, "Обери:", reply_markup=keyboard)
+
+@bot.message_handler(func=lambda message: message.text == "Адміністратор")
+def administrat(message):
+    murkup_admin = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    admin_button = telebot.types.KeyboardButton("Поділитись номером 📱", request_contact=True)
+    murkup_admin.add(admin_button)
+    bot.send_message(message.chat.id, "Залиште свої контакти, адміністратор звяжиться з Вами протягом кількох хвилин)", reply_markup=murkup_admin)
+
+@bot.message_handler(content_types=["contact"])
+def send_admin(message):
+    bot.send_contact(admin(), phone_number=message.contact.phone_number, first_name=message.contact.first_name, last_name=message.contact.last_name)
+    bot.send_message(message.chat.id, "Ваші контакти переслані адміністратору", reply_markup=keyboard)
+
+@bot.message_handler(func=lambda message: message.text == "Корзина")
+def cart(message):
+    filename = "bascet.json"
+    corent_cart = None
+    
+    data = {}
+
+    if os.path.exists(filename) and os.path.getsize(filename) > 0:
+        with open(filename, "r", encoding='utf-8') as f:
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError:
+                print(f"Попередження: Файл {filename} містить невалідний JSON. Створюємо новий об'єкт.")
+                data = {}
+    
+    if data != {}:
+        corent_cart = data.get(str(message.from_user.id))
+        for i in corent_cart:
+            bot.send_message(message.chat.id, f"Назва - {i["name"]}\nВартість за 1 - {i["price"]}\nКількість - {i["quantity"]}\nСума - {i["price"] * i["quantity"]}")
+    else:
+        bot.send_message(message.chat.id, "Ваша корзина порожня")
 
 @bot.message_handler(func=lambda message: message.text == "Меню")
 def menu_main(message):
@@ -29,12 +63,12 @@ def menu_main(message):
 
     bot.send_message(message.chat.id, "Оберіть категорію, що саме Ви хотіли б замовити", reply_markup=markup_main)
 
-@bot.callback_query_handler(func=lambda call: call.data in ["coffe", "drinks", "desserts", "Меню"])
+@bot.callback_query_handler(func=lambda call: call.data in ["coffe", "drinks", "desserts"])
 def menu(call):
     bot.answer_callback_query(call.id)
     if call.data == "coffe":
         markup_coffe = telebot.types.InlineKeyboardMarkup()
-        in_keybord_coffe = {"Еспресо": "espreso", "Американо": "americano", "Капучино": "capuchino", "Лате": "late", "Назад": "Меню"}
+        in_keybord_coffe = {"Еспресо": "espreso", "Американо": "americano", "Капучино": "capuchino", "Лате": "late"}
         
         for key in in_keybord_coffe.keys():
             button = telebot.types.InlineKeyboardButton(text=key, callback_data=in_keybord_coffe[key])
@@ -49,7 +83,7 @@ def menu(call):
         
     elif call.data == "drinks":
         markup_drinks = telebot.types.InlineKeyboardMarkup()
-        in_keybord_drinks = {"Чай зелений": "tea_green", "Чай чорний": "tea_black", "Матча": "matcha", "Какао": "kackao", "Назад": "Меню"}
+        in_keybord_drinks = {"Чай зелений": "tea_green", "Чай чорний": "tea_black", "Матча": "matcha", "Какао": "kackao"}
 
         for key in in_keybord_drinks.keys():
             button = telebot.types.InlineKeyboardButton(text=key, callback_data=in_keybord_drinks[key])
@@ -63,7 +97,7 @@ def menu(call):
         
     elif call.data == "desserts":
         markup_desserts = telebot.types.InlineKeyboardMarkup()
-        in_keybord_desserts = {"Чізкей": "cheesecake", "Тірамісу": "tiramisu ", "Макарони": "macaron", "Назад": "Меню"}
+        in_keybord_desserts = {"Чізкей": "cheesecake", "Тірамісу": "tiramisu ", "Макарони": "macaron"}
 
         for key in in_keybord_desserts.keys():
             button = telebot.types.InlineKeyboardButton(text=key, callback_data=in_keybord_desserts[key])
