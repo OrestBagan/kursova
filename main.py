@@ -52,6 +52,47 @@ def cart(message):
     else:
         bot.send_message(message.chat.id, "Ваша корзина порожня")
 
+@bot.message_handler(func=lambda message: message.text == "Контакти")
+def contacts(message):
+    bot.send_message(message.chat.id, text="""
+☕ Контакти та Адреса Кав'ярні "Львівська копальня кави"
+
+Дякуємо, що обираєте нас! Радо чекаємо на вас у нашій атмосферній кав'ярні-музеї.
+
+---
+
+📍 Адреса та Як Нас Знайти
+* Назва Кав'ярні: Львівська копальня кави
+* Адреса: Площа Ринок, 10, Львів (Вхід з Арсенальної вулиці)
+* Орієнтир: Центральна площа, підземний вхід з літньою терасою.
+* Карта: https://maps.app.goo.gl/YourCoffeeMineLocation 
+
+---
+
+📞 Зв'язок з Нами
+Ви завжди можете зв'язатися з нами для бронювання столика, екскурсій або замовлень кави в зернах:
+* Телефон (для замовлень): +38 (032) 487-21-93
+* Телефон (Адміністратор): +38 (063) 555-40-77
+* Електронна пошта: lviv.kopalnya@coffee.ua
+
+---
+
+⏰ Режим Роботи
+Наші двері відчинені для вас щодня!
+* Понеділок - П'ятниця: 08:00 – 22:00
+* Субота - Неділя: 08:00 – 23:00
+
+---
+
+🌐 Соціальні Мережі (Акції та Новини)
+Стежте за нашими новинами та підземними акціями!
+* Instagram: https://instagram.com/lviv_kopalnya
+* Facebook: https://facebook.com/lvivkopalnyakavy
+
+Чекаємо на вас у "копальні"! ⛏️✨
+""")
+    bot.send_photo(message.chat.id, "https://lh3.googleusercontent.com/p/AF1QipN5YkJC-djDhb1M6c2lRedPWEShjB8slMYS9dNu=s680-w680-h510-rw")
+
 @bot.message_handler(func=lambda message: message.text == "Меню")
 def menu_main(message):
     markup_main = telebot.types.InlineKeyboardMarkup()
