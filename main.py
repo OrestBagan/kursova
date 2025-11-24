@@ -34,6 +34,10 @@ def send_admin(message):
 def cart(message):
     filename = "bascet.json"
     corent_cart = None
+
+    markup_clear_cart = telebot.types.InlineKeyboardMarkup()
+    clear_cart_button = telebot.types.InlineKeyboardButton(text="Так", callback_data="yes")
+    markup_clear_cart.add(clear_cart_button)
     
     data = {}
 
@@ -44,13 +48,43 @@ def cart(message):
             except json.JSONDecodeError:
                 print(f"Попередження: Файл {filename} містить невалідний JSON. Створюємо новий об'єкт.")
                 data = {}
-    
+
     if data != {}:
         corent_cart = data.get(str(message.from_user.id))
         for i in corent_cart:
             bot.send_message(message.chat.id, f"Назва - {i["name"]}\nВартість за 1 - {i["price"]}\nКількість - {i["quantity"]}\nСума - {i["price"] * i["quantity"]}")
     else:
         bot.send_message(message.chat.id, "Ваша корзина порожня")
+    
+    if data != {}:
+        bot.send_message(message.chat.id, "Бажаєте видалити корзину?", reply_markup=markup_clear_cart)
+    else:
+        pass
+
+@bot.callback_query_handler(func=lambda call: call.data == "yes")
+def clear_cart(call):
+    if call.data == "yes":
+        print('ok')
+        filename = "bascet.json"
+        data = {}
+        if os.path.exists(filename) and os.path.getsize(filename) > 0:
+            with open(filename, "r", encoding='utf-8') as f:
+                try:
+                    data = json.load(f)
+                except json.JSONDecodeError:
+                    print(f"Попередження: Файл {filename} містить невалідний JSON. Створюємо новий об'єкт.")
+                    data = {}
+    
+        del data[str(call.message.chat.id)]
+        with open(filename, "w", encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        bot.answer_callback_query(
+            call.id,
+            text="Корзину очищено✅", 
+            show_alert=False
+        )
+
 
 @bot.message_handler(func=lambda message: message.text == "Контакти")
 def contacts(message):
